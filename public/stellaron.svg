@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="coreGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#FFF7B0"/>
+      <stop offset="40%" stop-color="#FFD84D"/>
+      <stop offset="100%" stop-color="#FFB300"/>
+    </radialGradient>
+
+    <linearGradient id="crystal" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#2B2B2B"/>
+      <stop offset="50%" stop-color="#5A4A1E"/>
+      <stop offset="100%" stop-color="#111111"/>
+    </linearGradient>
+
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <rect width="512" height="512" fill="#050505"/>
+
+  <!-- Outer Rings -->
+  <circle cx="256" cy="256" r="190"
+          stroke="#FFD84D"
+          stroke-width="4"
+          opacity="0.8"/>
+
+  <circle cx="256" cy="256" r="150"
+          stroke="#FFCC33"
+          stroke-width="2"
+          opacity="0.45"/>
+
+  <!-- Energy Glow -->
+  <circle cx="256" cy="256" r="90"
+          fill="url(#coreGlow)"
+          opacity="0.35"
+          filter="url(#glow)"/>
+
+  <!-- Main Crystal -->
+  <polygon points="256,70 360,256 256,442 152,256"
+           fill="url(#crystal)"
+           stroke="#FFD84D"
+           stroke-width="5"/>
+
+  <!-- Inner Core -->
+  <polygon points="256,140 315,256 256,372 197,256"
+           fill="url(#coreGlow)"
+           filter="url(#glow)"/>
+
+  <!-- Floating Shards -->
+  <polygon points="120,210 145,180 160,235"
+           fill="#1A1A1A"
+           stroke="#FFD84D"
+           stroke-width="2"/>
+
+  <polygon points="390,190 415,225 385,245"
+           fill="#1A1A1A"
+           stroke="#FFD84D"
+           stroke-width="2"/>
+
+  <polygon points="380,330 405,305 420,350"
+           fill="#1A1A1A"
+           stroke="#FFD84D"
+           stroke-width="2"/>
+
+  <polygon points="110,320 145,295 150,345"
+           fill="#1A1A1A"
+           stroke="#FFD84D"
+           stroke-width="2"/>
+
+  <!-- Energy Cracks -->
+  <path d="M256 140 L250 210 L280 250 L240 320"
+        stroke="#FFF2A6"
+        stroke-width="3"
+        stroke-linecap="round"
+        filter="url(#glow)"/>
+
+  <path d="M220 230 L280 260 L245 340"
+        stroke="#FFE066"
+        stroke-width="2"
+        stroke-linecap="round"
+        filter="url(#glow)"/>
+
+  <!-- Core Spark -->
+  <circle cx="256" cy="256" r="18"
+          fill="#FFFFFF"
+          filter="url(#glow)"/>
+</svg>

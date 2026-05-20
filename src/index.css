@@ -1,0 +1,67 @@
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Exo+2:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap');
+
+@import "tailwindcss";
+
+:root {
+  --color-bg:       #080c14;
+  --color-surface:  #0e1521;
+  --color-panel:    #131c2e;
+  --color-border:   #1e2d45;
+  --color-accent:   #4fc3f7;
+  --color-gold:     #c8a84b;
+  --color-red:      #e05c5c;
+  --color-text:     #d0dff0;
+  --color-muted:    #5a7a99;
+
+  --path-hunt:        #a78bfa;
+  --path-erudition:   #60a5fa;
+  --path-nihility:    #f472b6;
+  --path-abundance:   #34d399;
+  --path-destruction: #fb923c;
+  --path-harmony:     #fbbf24;
+  --path-preservation:#38bdf8;
+  --path-remembrance: #c084fc;
+  --path-elation:     #f9a8d4;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: 'Exo 2', sans-serif;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Rajdhani', sans-serif;
+  letter-spacing: 0.04em;
+}
+
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--color-bg); }
+::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: var(--color-accent); }
+
+.panel {
+  background: var(--color-panel);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+}
+
+#root {
+  width: 100%;
+  min-height: 100vh;
+}
+
+a { text-decoration: none; }
+
+*:focus { outline: none; }
+*:focus-visible {
+  outline: 1px solid var(--color-accent);
+  outline-offset: 2px;
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
