@@ -1,24 +1,37 @@
 // Parses "#1[i]% of ATK" style desc strings, substituting real values from params
-// #N[i]   → params[N-1] formatted as integer percentage (0.5 → 50)
-// #N[f1]  → params[N-1] formatted to 1 decimal place
-// #N[p]   → params[N-1] formatted as % with 1 decimal
-// #N[i]%  → already has % in string, just substitute the number
+// #N[i]   → formatted as integer percentage if fractional or followed by % (0.5 → 50), otherwise raw integer (5 → 5)
+// #N[f1]  → formatted to 1 decimal place (scaled if percentage)
+// #N[p]   → formatted as % with 1 decimal
 
 export function parseSkillDesc(desc: string, params: number[]): string {
-  return desc.replace(/#(\d+)\[([^\]]+)\]/g, (_, indexStr, format) => {
+  return desc.replace(/#(\d+)\[([^\]]+)\]/g, (fullMatch, indexStr, format, offset) => {
     const index = parseInt(indexStr, 10) - 1;
     const value = params[index] ?? 0;
 
+    // Look ahead to see if a '%' sign follows this token (ignoring spaces)
+    const nextChars = desc.slice(offset + fullMatch.length, offset + fullMatch.length + 5).trim();
+    const hasPercent = nextChars.startsWith('%');
+
     if (format === 'i') {
-      // If value looks like a multiplier (< 10), treat as percentage
-      return value < 10 ? String(Math.round(value * 100)) : String(Math.round(value));
+      // It's a percentage if it's a raw decimal fraction (< 1) OR explicitly followed by a % sign
+      if (value < 1 || hasPercent) {
+        return String(Math.round(value * 100));
+      }
+      // Otherwise, it's a flat counter (like 5 Energy or 2 Turns)
+      return String(Math.round(value));
     }
+
     if (format === 'f1') {
-      return value < 10 ? (value * 100).toFixed(1) : value.toFixed(1);
+      if (value < 1 || hasPercent) {
+        return (value * 100).toFixed(1);
+      }
+      return value.toFixed(1);
     }
+
     if (format === 'p') {
       return `${(value * 100).toFixed(1)}%`;
     }
+
     // fallback
     return String(value);
   })

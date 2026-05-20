@@ -106,7 +106,30 @@ export default function CharacterDetail() {
             .filter((trace: any) =>
               ['Point06', 'Point07', 'Point08'].includes(trace.anchor)
             )
-            .map((trace: any) => [trace.anchor, trace])
+            .map((trace: any) => {
+              // Safe-extract parameter array across all common aggregate formats
+              let traceParams: number[] = [];
+              if (Array.isArray(trace.params)) {
+                traceParams = Array.isArray(trace.params[0]) ? trace.params[0] : trace.params;
+              } else if (trace.levels) {
+                const levelData = trace.levels[0] || trace.levels['1'] || Object.values(trace.levels)[0];
+                if (levelData && Array.isArray(levelData.params)) {
+                  traceParams = levelData.params;
+                }
+              }
+
+              // Format description using our smart heuristic parser
+              const formattedDesc = parseSkillDesc(trace.desc ?? '', traceParams);
+
+              // Spread all original properties to preserve icons/IDs perfectly
+              return [
+                trace.anchor,
+                {
+                  ...trace,
+                  desc: formattedDesc,
+                },
+              ];
+            })
         ).values()
       );
 
@@ -283,17 +306,6 @@ export default function CharacterDetail() {
       {/* Skills tab */}
       {activeTab === 'skills' && (
         <>
-          <h2
-            style={{
-              fontFamily: 'Rajdhani, sans-serif',
-              letterSpacing: '0.08em',
-              fontSize: '1.25rem',
-              marginBottom: '1rem',
-              textTransform: 'uppercase',
-            }}
-          >
-            Skills
-          </h2>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
             {skills.map((skill) => (
               <SkillCard
@@ -456,7 +468,6 @@ function SkillCard({ skill, elementColor, skillLevel, onLevelChange }: {
   skillLevel: number;
   onLevelChange: (id: string, level: number) => void;
 }) {
-  const [expanded, setExpanded] = useState(false);
   const params = skill.params[skillLevel - 1] ?? skill.params[0] ?? [];
   const parsedDesc = parseSkillDesc(skill.desc, params);
 
@@ -503,52 +514,6 @@ function SkillCard({ skill, elementColor, skillLevel, onLevelChange }: {
           )}
         </div>
       </div>
-
-      {skill.maxLevel > 1 && (
-        <button
-          onClick={() => setExpanded((v) => !v)}
-          style={{ width: '100%', padding: '0.5rem', background: 'var(--color-surface)', border: 'none', borderTop: '1px solid var(--color-border)', color: 'var(--color-muted)', fontSize: '0.75rem', fontFamily: 'Rajdhani, sans-serif', letterSpacing: '0.1em', textTransform: 'uppercase', cursor: 'pointer' }}
-        >
-          {expanded ? '▲ Hide Table' : '▼ Show All Levels'}
-        </button>
-      )}
-
-      {expanded && (
-        <div style={{ overflowX: 'auto', borderTop: '1px solid var(--color-border)' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8rem' }}>
-            <thead>
-              <tr style={{ background: 'var(--color-surface)' }}>
-                <th style={{ padding: '0.5rem 1rem', textAlign: 'left', color: 'var(--color-muted)', fontFamily: 'Rajdhani, sans-serif', letterSpacing: '0.1em', fontWeight: 600 }}>LV</th>
-                {params.map((_, i) => (
-                  <th key={i} style={{ padding: '0.5rem 1rem', textAlign: 'right', color: 'var(--color-muted)', fontFamily: 'Rajdhani, sans-serif', letterSpacing: '0.1em', fontWeight: 600 }}>
-                    {`Value ${i + 1}`}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {skill.params.map((levelParams, lvlIndex) => {
-                const isActive = lvlIndex + 1 === skillLevel;
-                return (
-                  <tr
-                    key={lvlIndex}
-                    style={{ background: isActive ? `${elementColor}11` : 'transparent', borderTop: '1px solid var(--color-border)' }}
-                  >
-                    <td style={{ padding: '0.4rem 1rem', fontFamily: 'Rajdhani, sans-serif', fontWeight: isActive ? 700 : 400, color: isActive ? 'var(--color-accent)' : 'var(--color-muted)' }}>
-                      {lvlIndex + 1}
-                    </td>
-                    {levelParams.map((val, i) => (
-                      <td key={i} style={{ padding: '0.4rem 1rem', textAlign: 'right', fontFamily: 'Rajdhani, sans-serif', color: isActive ? elementColor : 'var(--color-text)', fontWeight: isActive ? 700 : 400 }}>
-                        {val < 10 ? `${Math.round(val * 100)}%` : val}
-                      </td>
-                    ))}
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      )}
     </div>
   );
 }
