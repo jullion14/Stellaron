@@ -1,73 +1,244 @@
-# React + TypeScript + Vite
+# Stellaron
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A Honkai: Star Rail theory-crafting and build-planning web application focused on clean UI, accurate stat calculations, and future team simulation support.
 
-Currently, two official plugins are available:  
+![Stellaron Banner](./public/banner.png)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+---
 
-## React Compiler
+# Overview
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Stellaron is a personal full-stack-style frontend project built to explore:
+- Character stat calculations
+- Trace systems
+- Relic optimization
+- Damage simulation
+- Team composition theorycrafting
 
-## Expanding the ESLint configuration
+The project uses static game data from StarRailRes while preparing for future Mihomo API integration for real player UID imports.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+---
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+# Features
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## Current Features
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### Character Browser
+- Browse all playable characters
+- Filter by:
+  - Element
+  - Path
+  - Rarity
+  - Name search
+
+### Character Detail Page
+- Dynamic level scaling (Lv.1–80)
+- Live stat calculations
+- Ascension tier handling
+- Skill descriptions with parsed multipliers
+- Skill level sliders
+- Full skill value tables
+- Eidolon display
+- Major traces
+- Aggregated minor trace stats
+
+### UI / UX
+- Dark sci-fi inspired theme
+- Element-colored highlights
+- Responsive layouts
+- Smooth panel/card styling
+- HSR-inspired visual hierarchy
+
+---
+
+# Planned Features
+
+## Phase 3 — Relic System
+- Relic input UI
+- Main stat + substat support
+- Set bonuses
+- Real-time stat aggregation
+
+## Phase 4 — Damage Calculator
+- Damage formula engine
+- Buff/debuff handling
+- Break calculations
+- Turn simulation
+
+## Phase 5 — Team Builder
+- Team synergy calculations
+- Mihomo UID import
+- Buff timeline simulation
+- Rotation planning
+
+---
+
+# Tech Stack
+
+| Technology | Purpose |
+|---|---|
+| React + TypeScript | Frontend framework |
+| Vite | Build tooling |
+| Zustand | State management |
+| TanStack React Query | Data fetching + caching |
+| React Router | Routing |
+| Tailwind CSS v4 | Styling |
+| StarRailRes | Static game data |
+| Mihomo API | Future player import support |
+
+---
+
+# Project Structure
+
+```txt
+src/
+├── api/
+│   ├── staticData.ts
+│   ├── characterMapper.ts
+│   └── enka.ts
+│
+├── components/
+│   ├── characters/
+│   └── ui/
+│
+├── pages/
+│   ├── Home.tsx
+│   ├── Characters.tsx
+│   ├── CharacterDetail.tsx
+│   ├── Builder.tsx
+│   └── Team.tsx
+│
+├── store/
+│   └── characterStore.ts
+│
+├── types/
+│   └── index.ts
+│
+└── utils/
+    ├── constants.ts
+    ├── levelUtils.ts
+    └── skillUtils.ts
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+---
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+# Data Sources
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Static Data — StarRailRes
+
+Used for:
+- character info
+- skills
+- traces
+- eidolons
+- promotion values
+
+Repository:
+https://github.com/Mar-7th/StarRailRes
+
+Files used:
+- `characters.json`
+- `character_promotions.json`
+- `character_skills.json`
+- `character_skill_trees.json`
+- `character_ranks.json`
+
+---
+
+## Dynamic Data — Mihomo API
+
+Planned usage:
+- UID imports
+- equipped relics
+- light cones
+- player-owned characters
+
+API:
+https://api.mihomo.me
+
+---
+
+# Installation
+
+## Clone Repository
+
+```bash
+git clone https://github.com/yourusername/stellaron.git
 ```
+
+## Enter Project Directory
+
+```bash
+cd stellaron
+```
+
+## Install Dependencies
+
+```bash
+npm install
+```
+
+## Start Development Server
+
+```bash
+npm run dev
+```
+
+---
+
+# Build Production
+
+```bash
+npm run build
+```
+
+---
+
+# Future Goals
+
+- Full relic optimizer
+- Team DPS simulation
+- Speed tuning assistant
+- Rotation planner
+- Damage breakdown visualizer
+- Mobile-responsive builder layout
+- Save/share builds
+- Multi-language support
+
+---
+
+# Screenshots
+
+## Character Page
+
+_Add screenshot here_
+
+## Skills Section
+
+_Add screenshot here_
+
+## Trace System
+
+_Add screenshot here_
+
+---
+
+# License
+
+This project is for educational and personal portfolio purposes.
+
+Honkai: Star Rail and related assets belong to HoYoverse.
+
+---
+
+# Credits
+
+## Data Sources
+- StarRailRes
+- Mihomo API
+
+---
+
+# Author
+
+Developed by Julian Lim.
