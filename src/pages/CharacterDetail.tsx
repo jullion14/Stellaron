@@ -51,14 +51,56 @@ const PROPERTY_LABELS: Record<string, string> = {
   QuantumAddedRatio: 'Quantum DMG Bonus',
   ImaginaryAddedRatio: 'Imaginary DMG Bonus',
   PhysicalAddedRatio: 'Physical DMG Bonus',
+
+  ElationDamageAddedRatioBase: 'Elation',
 };
+
+const SKILL_COLORS: Record<string, string> = {
+  ...ELEMENT_COLORS,
+  'ElationDamage': '#ff6b8b', // Custom aesthetic palette color matching an Elation/Joy theme
+  'Elation': '#ff6b8b',
+};
+
 export default function CharacterDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [level, setLevel] = useState(80);
   const [activeTab, setActiveTab] = useState<'stats' | 'skills' | 'eidolons'>('skills');
   const [skillLevels, setSkillLevels] = useState<Record<string, number>>({});
-  const getSkillLevel = (skill: Skill) => skillLevels[skill.id] ?? skill.maxLevel;
+  
+  const getSkillLevel = (skill: Skill) => skillLevels[skill.id] ?? getSkillMaxLevel(skill);
+
+  const getSkillMaxLevel = (skill: Skill): number => {
+    // 1. Baseline parameter array length check
+    const totalLevels = skill.params?.length ?? 0;
+    if (totalLevels <= 1) return 1;
+
+    // 2. Multiplier Progression Heuristic Check
+    const firstLevelParams = skill.params[0] || [];
+    const maxLevelParams = skill.params[totalLevels - 1] || [];
+
+    const isStaticHeuristic =
+      firstLevelParams.length === maxLevelParams.length &&
+      firstLevelParams.every((val, index) => val === maxLevelParams[index]);
+
+    // Force max level to 1 if multipliers do not scale across level rows
+    if (isStaticHeuristic) {
+      return 1;
+    }
+
+    // 3. Category Fallback Caps
+    const typeTextLower = skill.typeText?.toLowerCase() || '';
+    const typeLower = (skill as any).type?.toLowerCase() || '';
+
+    if (typeTextLower.includes('elation') || typeLower.includes('elation')) {
+      return Math.min(skill.maxLevel, 15);
+    }
+    if (typeTextLower.includes('memosprite') || typeLower.includes('memosprite')) {
+      return Math.min(skill.maxLevel, 10);
+    }
+
+    return skill.maxLevel;
+  };
 
   // Fetch all needed data in parallel
   const { data, isLoading, error } = useQuery({
@@ -93,13 +135,57 @@ export default function CharacterDetail() {
         .map(mapEidolon);
 
       charSkills.forEach((skill) => {
-        if (['Basic ATK', 'Skill', 'Ultimate', 'Talent', 'Technique'].includes(skill.typeText)) {
-          uniqueSkillsMap.set(skill.id, skill);
+        const typeText = skill.typeText || '';
+        const lowerTypeText = typeText.toLowerCase();
+        const lowerType = (skill as any).type?.toLowerCase() || '';
+        
+        if (
+          ['basic atk', 'skill', 'ultimate', 'talent', 'technique'].includes(lowerTypeText) ||
+          lowerTypeText.includes('memosprite') ||
+          lowerTypeText.includes('heir') ||
+          lowerTypeText.includes('elation') ||
+          lowerType.includes('elation')
+        ) {
+          // Normalize special variant types to cleanly flatten sub-variants by name
+          const isSpecialVariant = 
+            lowerTypeText.includes('memosprite') || 
+            lowerTypeText.includes('heir') || 
+            lowerTypeText.includes('elation') ||
+            lowerType.includes('elation');
+
+          const uniqueKey = isSpecialVariant ? skill.name : `${skill.name}_${typeText}`;
+          
+          if (uniqueSkillsMap.has(uniqueKey)) {
+            const existingSkill = uniqueSkillsMap.get(uniqueKey)!;
+            // Retain the version that contains structural string text data 
+            if (!existingSkill.desc && skill.desc) {
+              uniqueSkillsMap.set(uniqueKey, skill);
+            }
+          } else {
+            uniqueSkillsMap.set(uniqueKey, skill);
+          }
         }
       });
 
       const combatSkills = Array.from(uniqueSkillsMap.values());
-
+      // Cleanly separate core and memosprite skill layouts
+      // 1. Separate standard skills (exclude Memosprite and Elation)
+      const coreSkills = combatSkills.filter(s => 
+        !s.typeText?.toLowerCase().includes('memosprite') && 
+        !s.typeText?.toLowerCase().includes('elation') &&
+        !((s as any).type?.toLowerCase() || '').includes('elation')
+      );
+      
+      // 2. Separate Memosprite skills
+      const memospriteSkills = combatSkills.filter(s => 
+        s.typeText?.toLowerCase().includes('memosprite')
+      );
+      
+      // 3. Separate Elation skills
+      const elationSkills = combatSkills.filter(s => 
+        s.typeText?.toLowerCase().includes('elation') || 
+        ((s as any).type?.toLowerCase() || '').includes('elation')
+      );
       const majorTraces = Array.from(
         new Map(
           traceNodes
@@ -161,7 +247,7 @@ export default function CharacterDetail() {
 
       const minorTraces = Array.from(minorTraceMap.values());
 
-      return { character, promotion, skills: combatSkills, eidolons: charEidolons, majorTraces, minorTraces };
+      return { character, promotion, coreSkills, memospriteSkills, elationSkills, eidolons: charEidolons, majorTraces, minorTraces };
     },
     staleTime: 1000 * 60 * 10,
     enabled: !!id,
@@ -184,7 +270,7 @@ export default function CharacterDetail() {
     </div>
   );
 
-  const { character, promotion, skills, eidolons, majorTraces, minorTraces } = data;
+  const { character, promotion, coreSkills, memospriteSkills, elationSkills, eidolons, majorTraces, minorTraces } = data;
   const elementColor = ELEMENT_COLORS[character.element];
   const pathColor    = PATH_COLORS[character.path];
   const asc          = ascensionForLevel(level);
@@ -201,8 +287,7 @@ export default function CharacterDetail() {
     { label: 'CRIT Rate', value: `${(promo.crit_rate.base * 100).toFixed(1)}%` },
     { label: 'CRIT DMG',  value: `${(promo.crit_dmg.base  * 100).toFixed(1)}%` },
   ] : [];
-
-
+  
   return (
     <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '2rem 1.5rem' }}>
 
@@ -235,13 +320,13 @@ export default function CharacterDetail() {
           {/* Name + badges */}
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem' }}>
-              <span style={{ fontSize: '0.7rem', fontFamily: 'Rajdhani, sans-serif', letterSpacing: '0.2em', color: elementColor, textTransform: 'uppercase' }}>{character.element}</span>
+              <span style={{ fontSize: '0.7rem', fontWeight: 600, fontFamily: 'Rajdhani, sans-serif', letterSpacing: '0.2em', color: elementColor, textTransform: 'uppercase' }}>{character.element}</span>
               <span style={{ width: '1px', height: '12px', background: 'var(--color-border)' }} />
-              <span style={{ fontSize: '0.7rem', fontFamily: 'Rajdhani, sans-serif', letterSpacing: '0.2em', color: pathColor, textTransform: 'uppercase' }}>{PATH_LABELS[character.path]}</span>
+              <span style={{ fontSize: '0.7rem', fontWeight: 600, fontFamily: 'Rajdhani, sans-serif', letterSpacing: '0.2em', color: pathColor, textTransform: 'uppercase' }}>{PATH_LABELS[character.path]}</span>
               <span style={{ width: '1px', height: '12px', background: 'var(--color-border)' }} />
-              <span style={{ fontSize: '0.7rem', fontFamily: 'Rajdhani, sans-serif', color: character.rarity === 5 ? '#c8a84b' : '#9b7ff5' }}>{character.rarity}★</span>
+              <span style={{ fontSize: '0.7rem', fontWeight: 600, fontFamily: 'Rajdhani, sans-serif', color: character.rarity === 5 ? '#c8a84b' : '#9b7ff5' }}>{character.rarity}★</span>
             </div>
-            <h1 style={{ fontFamily: 'Rajdhani, sans-serif', fontSize: 'clamp(2rem, 4vw, 3rem)', fontWeight: 700, color: 'var(--color-text)', letterSpacing: '0.04em', lineHeight: 1 }}>
+            <h1 style={{ fontFamily: 'Rajdhani, sans-serif', fontSize: 'clamp(2.2rem, 4vw, 3.2rem)', fontWeight: 700, color: 'var(--color-text)', letterSpacing: '0.04em', lineHeight: 1 }}>
               {character.name}
             </h1>
           </div>
@@ -306,17 +391,79 @@ export default function CharacterDetail() {
       {/* Skills tab */}
       {activeTab === 'skills' && (
         <>
+          {/* Section 1: Standard Core Combat Skills */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-            {skills.map((skill) => (
-              <SkillCard
-                key={skill.id}
-                skill={skill}
-                elementColor={elementColor}
-                skillLevel={getSkillLevel(skill)}
-                onLevelChange={(id, level) => setSkillLevels((prev) => ({ ...prev, [id]: level }))}
-              />
-            ))}
+            {coreSkills.map((skill) => {
+              const maxLevelSafe = getSkillMaxLevel(skill); // ← Enforce dynamic caps/uniform steps here
+              return (
+                <SkillCard
+                  key={skill.id}
+                  elementColor={elementColor}
+                  skill={{
+                    ...skill,
+                    maxLevel: maxLevelSafe
+                  }}
+                  skillLevel={Math.min(getSkillLevel(skill), maxLevelSafe)}
+                  onLevelChange={(id, level) => setSkillLevels((prev) => ({ ...prev, [id]: level }))}
+                />
+              );
+            })}
           </div>
+
+          {/* Section 2: Memosprite Skills Separation breakout */}
+          {memospriteSkills.length > 0 && (
+            <div style={{ marginTop: '3rem' }}>
+              <h2 style={{ fontFamily: 'Rajdhani, sans-serif', letterSpacing: '0.08em', fontSize: '1.25rem', marginBottom: '1rem', textTransform: 'uppercase', color: 'var(--color-accent)' }}>
+                Memosprite Skills
+              </h2>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                {memospriteSkills.map((skill) => {
+                  const maxLevelSafe = getSkillMaxLevel(skill);
+                  return (
+                    <SkillCard
+                      key={skill.id}
+                      elementColor={elementColor}
+                      skill={{
+                        ...skill,
+                        maxLevel: maxLevelSafe
+                      }}
+                      skillLevel={Math.min(getSkillLevel(skill), maxLevelSafe)}
+                      onLevelChange={(id, level) => setSkillLevels((prev) => ({ ...prev, [id]: level }))}
+                    />
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Section 3: Elation Skills Separation breakout */}
+          {elationSkills.length > 0 && (
+            <div style={{ marginTop: '3rem' }}>
+              <h2 style={{ fontFamily: 'Rajdhani, sans-serif', letterSpacing: '0.08em', fontSize: '1.25rem', marginBottom: '1rem', textTransform: 'uppercase', color: 'var(--color-accent)' }}>
+                Elation Skills
+              </h2>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                {elationSkills.map((skill) => {
+                  const maxLevelSafe = getSkillMaxLevel(skill);
+                  const rawType = (skill as any).type || '';
+                  const cardColor = SKILL_COLORS[rawType] || SKILL_COLORS[skill.typeText || ''] || elementColor;
+                  
+                  return (
+                    <SkillCard
+                      key={skill.id}
+                      elementColor={cardColor}
+                      skill={{
+                        ...skill,
+                        maxLevel: maxLevelSafe
+                      }}
+                      skillLevel={Math.min(getSkillLevel(skill), maxLevelSafe)}
+                      onLevelChange={(id, level) => setSkillLevels((prev) => ({ ...prev, [id]: level }))}
+                    />
+                  );
+                })}
+              </div>
+            </div>
+          )}
 
           {/* Major Traces */}
           <div style={{ marginTop: '3rem' }}>
@@ -366,19 +513,18 @@ export default function CharacterDetail() {
                       }}
                     />
 
-                    <div style={{ fontWeight: 600 }}>
+                    <div style={{ fontWeight: 600, fontSize: '1.05rem', color: 'var(--color-text)' }}>
                       {trace.name}
                     </div>
                   </div>
 
                   <div
                     style={{
-                      color: 'var(--color-muted)',
-                      lineHeight: 1.5,
-                      fontSize: '0.9rem',
-                    }}
-                  >
-                    {trace.desc}
+                      color: '#d1d5db',
+                      lineHeight: 1.6,
+                      fontSize: '0.95rem',
+                    }}>
+                     <div dangerouslySetInnerHTML={{ __html: trace.desc.replace(/(\d+\.?\d*%?)/g, `<span style="color:${elementColor};font-weight:600">$1</span>`) }} />
                   </div>
                 </div>
               ))}
@@ -471,16 +617,29 @@ function SkillCard({ skill, elementColor, skillLevel, onLevelChange }: {
   const params = skill.params[skillLevel - 1] ?? skill.params[0] ?? [];
   const parsedDesc = parseSkillDesc(skill.desc, params);
 
+  // --- ADD THIS ASSET FALLBACK CHECK ---
+  const typeTextLower = skill.typeText?.toLowerCase() || '';
+  const typeLower = (skill as any).type?.toLowerCase() || '';
+  const isElation = typeTextLower.includes('elation') || typeLower.includes('elation');
+
+  // If it's an elation skill, point to the official repository path icon asset
+  const resolvedIconUrl = isElation 
+    ? "https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/path/Joy.png" // The game engine labels Elation internally as 'Joy'
+    : skill.iconUrl;
+
   return (
     <div style={{ background: 'var(--color-panel)', border: '1px solid var(--color-border)', borderRadius: '10px', overflow: 'hidden' }}>
 
       {/* Header row */}
       <div style={{ padding: '1.25rem', display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
         <img
-          src={skill.iconUrl}
+          src={resolvedIconUrl} // ← Use your new checked URL variable here
           alt={skill.name}
           style={{ width: '48px', height: '48px', borderRadius: '8px', background: 'var(--color-surface)', flexShrink: 0 }}
-          onError={(e) => { (e.target as HTMLImageElement).style.opacity = '0'; }}
+          onError={(e) => { 
+            // Secondary safety guardrail if the asset branch path is updated
+            (e.target as HTMLImageElement).src = 'https://raw.githubusercontent.com/Mar-7th/StarRailRes/master/icon/path/Joy.png'; 
+          }}
         />
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem', flexWrap: 'wrap' }}>
