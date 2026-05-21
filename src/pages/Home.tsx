@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 const FEATURES = [
   {
     title: 'Character Browser',
-    desc: 'Browse all Trailblazers with full stat sheets and kit info.',
+    desc: 'Browse all characters, light cones & relics with full stat sheets and kit info.',
     to: '/characters',
     accent: 'var(--color-accent)',
   },
@@ -33,7 +33,7 @@ export default function Home() {
         <h1 style={{ fontFamily: 'Rajdhani, sans-serif', fontSize: 'clamp(2.5rem, 6vw, 4.5rem)', fontWeight: 700, letterSpacing: '0.05em', color: 'var(--color-text)', marginBottom: '1rem', lineHeight: 1.1 }}>
           Stellaron
         </h1>
-        <p style={{ color: 'var(--color-muted)', fontSize: '1rem', lineHeight: 1.7 }}>
+        <p style={{ color: 'var(--color-muted)', fontSize: '1.25rem', lineHeight: 1.7 }}>
           A personal theory-crafting tool for Honkai: Star Rail —<br />
           build characters, simulate relics, and calculate team damage.
         </p>
@@ -52,7 +52,7 @@ export default function Home() {
           >
             <div style={{ width: '32px', height: '3px', background: accent, borderRadius: '2px', marginBottom: '1.25rem' }} />
             <h2 style={{ fontFamily: 'Rajdhani, sans-serif', fontSize: '1.25rem', fontWeight: 700, color: 'var(--color-text)', marginBottom: '0.6rem' }}>{title}</h2>
-            <p style={{ color: 'var(--color-muted)', fontSize: '0.875rem', lineHeight: 1.6 }}>{desc}</p>
+            <p style={{ color: 'var(--color-muted)', fontSize: '0.95rem', lineHeight: 1.6 }}>{desc}</p>
             <p style={{ marginTop: '1.25rem', fontSize: '0.7rem', fontFamily: 'Rajdhani, sans-serif', fontWeight: 600, letterSpacing: '0.2em', textTransform: 'uppercase', color: accent }}>Open →</p>
           </Link>
         ))}

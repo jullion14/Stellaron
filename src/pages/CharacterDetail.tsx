@@ -485,8 +485,11 @@ function SkillCard({ skill, elementColor, skillLevel, onLevelChange }: {
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem', flexWrap: 'wrap' }}>
             <span style={{ fontFamily: 'Rajdhani, sans-serif', fontSize: '1rem', fontWeight: 700, color: 'var(--color-text)' }}>{skill.name}</span>
-            <span style={{ fontSize: '0.65rem', fontFamily: 'Rajdhani, sans-serif', letterSpacing: '0.1em', padding: '0.1rem 0.5rem', borderRadius: '4px', background: `${elementColor}22`, color: elementColor, border: `1px solid ${elementColor}44` }}>{skill.typeText}</span>
-            <span style={{ fontSize: '0.65rem', color: 'var(--color-muted)', fontFamily: 'Rajdhani, sans-serif' }}>{skill.effectText}</span>
+            <span style={{ fontSize: '0.78rem', fontFamily: 'Rajdhani, sans-serif', letterSpacing: '0.1em', padding: '0.2rem 0.65rem', borderRadius: '4px', background: `${elementColor}22`, color: elementColor, border: `1px solid ${elementColor}44` }}>
+              {skill.typeText}</span>
+            <span style={{ fontSize: '0.78rem', letterSpacing:"0.05em", background: 'rgba(255, 255, 255, 0.06)', border:'1px solid var(--color-border)', color: 'var(--color-text)', fontFamily: 'Rajdhani, sans-serif' }}>
+              {skill.effectText}
+            </span>
           </div>
 
           <p

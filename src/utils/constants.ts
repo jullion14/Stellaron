@@ -43,3 +43,28 @@ export const PATH_LABELS: Record<Path, string> = {
   Remembrance: 'Remembrance',
   Elation:     'Elation',
 };
+
+// Icon URLs from StarRailRes
+const ICON_BASE = 'https://raw.githubusercontent.com/Mar-7th/StarRailRes/master';
+
+export const ELEMENT_ICON_URLS: Record<Element, string> = {
+  Fire:      `${ICON_BASE}/icon/element/Fire.png`,
+  Ice:       `${ICON_BASE}/icon/element/Ice.png`,
+  Lightning: `${ICON_BASE}/icon/element/Thunder.png`,
+  Wind:      `${ICON_BASE}/icon/element/Wind.png`,
+  Quantum:   `${ICON_BASE}/icon/element/Quantum.png`,
+  Imaginary: `${ICON_BASE}/icon/element/Imaginary.png`,
+  Physical:  `${ICON_BASE}/icon/element/Physical.png`,
+};
+
+export const PATH_ICON_URLS: Record<Path, string> = {
+  TheHunt:     `${ICON_BASE}/icon/path/Hunt.png`,
+  Erudition:   `${ICON_BASE}/icon/path/Erudition.png`,
+  Nihility:    `${ICON_BASE}/icon/path/Nihility.png`,
+  Abundance:   `${ICON_BASE}/icon/path/Abundance.png`,
+  Destruction: `${ICON_BASE}/icon/path/Destruction.png`,
+  Harmony:     `${ICON_BASE}/icon/path/Harmony.png`,
+  Preservation:`${ICON_BASE}/icon/path/Preservation.png`,
+  Remembrance: `${ICON_BASE}/icon/path/Remembrance.png`,
+  Elation:     `${ICON_BASE}/icon/path/Elation.png`,
+};
