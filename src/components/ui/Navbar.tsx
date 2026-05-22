@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 const NAV_LINKS = [
   { to: '/',           label: 'Home' },
   { to: '/characters', label: 'Characters' },
+  { to: '/light-cones', label: 'LightCones' },
   { to: '/builder',    label: 'Builder' },
   { to: '/team',       label: 'Team' },
 ];
@@ -35,7 +36,7 @@ export function Navbar() {
         {/* Links */}
         <div className="flex items-center gap-1">
           {NAV_LINKS.map(({ to, label }) => {
-            const active = pathname === to;
+            const active = to === '/' ? pathname === '/' : pathname.startsWith(to);
             return (
               <Link
                 key={to}

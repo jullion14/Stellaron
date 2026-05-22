@@ -83,6 +83,19 @@ export interface RawLightCone {
   portrait: string;
 }
 
+export interface RawLightConePromotion {
+  id: string;
+  values: RawPromotion[]; // index 0–6 = ascension 0–6 matching character layouts
+}
+
+export interface RawLightConeRank {
+  id: string;
+  name: string;
+  rank: number; // Superimposition levels 1–5
+  desc: string;
+  params: number[][]; // Multiplier tables per superimposition tier
+}
+
 // ─── Fetchers ────────────────────────────────────────────────────────────────
 
 export const fetchRawCharacters = () =>
@@ -99,6 +112,12 @@ export const fetchCharacterRanks = () =>
 
 export const fetchRawLightCones = () =>
   fetchJSON<Record<string, RawLightCone>>('light_cones');
+
+export const fetchLightConePromotions = () =>
+  fetchJSON<Record<string, RawLightConePromotion>>('light_cone_promotions');
+
+export const fetchLightConeRanks = () =>
+  fetchJSON<Record<string, RawLightConeRank>>('light_cone_ranks');
 
 export async function fetchCharacterSkillTrees() {
   const res = await fetch(

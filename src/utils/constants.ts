@@ -1,5 +1,9 @@
 import type { Element, Path } from '@/types';
 
+export const ALL_ELEMENTS: Element[] = ['Fire', 'Ice', 'Lightning', 'Wind', 'Quantum', 'Imaginary', 'Physical'];
+export const ALL_PATHS: Path[] = ['Destruction', 'TheHunt', 'Erudition', 'Harmony', 'Nihility', 'Preservation', 'Abundance', 'Remembrance', 'Elation'];
+export const ASC_CAPS = [20, 20, 30, 40, 50, 60, 70, 80];
+
 export const ELEMENT_COLORS: Record<Element, string> = {
   Fire:      '#fb923c',
   Ice:       '#67e8f9',

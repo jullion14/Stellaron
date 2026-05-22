@@ -10,12 +10,9 @@ import {
 } from '@/api/staticData';
 import { mapCharacter, mapSkill, mapEidolon } from '@/api/characterMapper';
 import { ascensionForLevel, calcStat } from '@/utils/levelUtils';
-import { ELEMENT_COLORS, PATH_LABELS, PATH_COLORS } from '@/utils/constants';
+import { ELEMENT_COLORS, PATH_LABELS, PATH_COLORS, ASC_CAPS } from '@/utils/constants';
 import type { Skill, Eidolon } from '@/types';
 import { parseSkillDesc } from '@/utils/skillUtils';
-
-// Level caps per ascension tier
-const ASC_CAPS = [20, 20, 30, 40, 50, 60, 70, 80];
 
 // Property name → display name lookup table
 // Used to convert raw property keys (e.g., 'FireAddedRatio') into readable labels (e.g., 'Fire DMG Bonus')

@@ -4,10 +4,7 @@ import { fetchRawCharacters } from '@/api/staticData';
 import { mapCharacter } from '@/api/characterMapper';
 import { CharacterCard } from '@/components/characters/CharacterCard';
 import type { Character, Element, Path } from '@/types';
-import { ELEMENT_COLORS, ELEMENT_ICON_URLS, PATH_COLORS, PATH_ICON_URLS, PATH_LABELS } from '@/utils/constants';
-
-const ALL_ELEMENTS: Element[] = ['Fire', 'Ice', 'Lightning', 'Wind', 'Quantum', 'Imaginary', 'Physical'];
-const ALL_PATHS: Path[] = ['Destruction', 'TheHunt', 'Erudition', 'Harmony', 'Nihility', 'Preservation', 'Abundance', 'Remembrance', 'Elation'];
+import { ELEMENT_COLORS, ELEMENT_ICON_URLS, PATH_COLORS, PATH_ICON_URLS, PATH_LABELS, ALL_ELEMENTS, ALL_PATHS } from '@/utils/constants';
 
 export default function Characters() {
   const { data: characters = [], isLoading, error } = useQuery({

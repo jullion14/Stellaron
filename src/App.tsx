@@ -6,6 +6,8 @@ import Characters from '@/pages/Characters';
 import Builder    from '@/pages/Builder';
 import Team       from '@/pages/Team';
 import CharacterDetail from '@/pages/CharacterDetail';
+import LightConeDetail from './pages/LightConeDetail';
+import LightConeList from './pages/LightCones';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -29,6 +31,8 @@ export default function App() {
               <Route path="/builder"    element={<Builder />} />
               <Route path="/team"       element={<Team />} />
               <Route path="/characters/:id" element={<CharacterDetail />} />
+              <Route path="/light-cones" element={<LightConeList />} />
+              <Route path="/light-cones/:id" element={<LightConeDetail />} />
             </Routes>
           </main>
         </div>
