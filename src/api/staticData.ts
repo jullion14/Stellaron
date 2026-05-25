@@ -95,7 +95,17 @@ export interface RawLightConeRank {
   desc: string;
   params: number[][]; // Multiplier tables per superimposition tier
 }
-
+export interface RawRelic {
+  id: string;
+  set_id: string;
+  name: string;
+  rarity: number;
+  type: string;
+  max_level: number;
+  main_affix_id: string;
+  sub_affix_id: string;
+  icon: string;
+}
 // ─── Fetchers ────────────────────────────────────────────────────────────────
 
 export const fetchRawCharacters = () =>
@@ -118,6 +128,14 @@ export const fetchLightConePromotions = () =>
 
 export const fetchLightConeRanks = () =>
   fetchJSON<Record<string, RawLightConeRank>>('light_cone_ranks');
+
+export const fetchRawRelics = () =>
+  fetchJSON<Record<string, RawRelic>>('relics');
+
+export async function fetchRawRelicSets() {
+  const res = await fetch(`${DB}/relic_sets.json`);
+  return res.json();
+}
 
 export async function fetchCharacterSkillTrees() {
   const res = await fetch(
