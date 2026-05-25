@@ -31,7 +31,8 @@ export default function Home() {
         width: '100%',
         minHeight: '480px', // Provides ample layout space for your header texts
         backgroundImage: `linear-gradient(to bottom, rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('./stellaron-banner.png')`, // Automatically blends banner into dark theme surfaces
-        backgroundSize: 'cover',
+        backgroundSize: 'contain',
+        backgroundRepeat: 'no-repeat',
         backgroundPosition: 'center',
         borderBottom: '1px solid var(--color-border)',
         display: 'flex',
