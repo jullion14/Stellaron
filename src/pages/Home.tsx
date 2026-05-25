@@ -23,10 +23,26 @@ const FEATURES = [
 
 export default function Home() {
   return (
-    <div style={{ minHeight: 'calc(100vh - 56px)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '4rem 2rem' }}>
+    <div style={{ minHeight: 'calc(100vh - 56px)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '0 0 4rem 0' }}>
+
+      {/* ================= FULL-WIDTH TOP HERO BANNER WRAPPER ================= */}
+      <div style={{
+        position: 'relative',
+        width: '100%',
+        minHeight: '480px', // Provides ample layout space for your header texts
+        backgroundImage: `linear-gradient(to bottom, rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('./stellaron-banner.png')`, // Automatically blends banner into dark theme surfaces
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        borderBottom: '1px solid var(--color-border)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '4rem 2rem',
+        marginBottom: '4rem'
+      }}></div>
 
       {/* Hero */}
-      <div style={{ textAlign: 'center', maxWidth: '600px', marginBottom: '4rem' }}>
+      <div style={{ textAlign: 'center', maxWidth: '600px', width: '100%' , zIndex: 2, position: 'relative' }}>
         <p style={{ color: 'var(--color-accent)', fontFamily: 'Rajdhani, sans-serif', fontSize: '0.7rem', letterSpacing: '0.3em', textTransform: 'uppercase', marginBottom: '1rem' }}>
           Personal Toolkit
         </p>

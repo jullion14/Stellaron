@@ -2,7 +2,7 @@
 
 A Honkai: Star Rail theory-crafting and build-planning web application focused on clean UI, accurate stat calculations, and future team simulation support.
 
-![Stellaron Banner](./public/banner.png)
+![Stellaron Banner](./public/stellaron-banner.png)
 
 ---
 
