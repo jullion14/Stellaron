@@ -1,16 +1,26 @@
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
 
 const NAV_LINKS = [
-  { to: '/',           label: 'Home' },
-  { to: '/characters', label: 'Characters' },
+  { to: '/',            label: 'Home' },
+  { to: '/characters',  label: 'Characters' },
   { to: '/light-cones', label: 'Light Cones' },
-  { to: '/relics', label: 'Relics' },
-  { to: '/builder',    label: 'Builder' },
-  { to: '/team',       label: 'Team' },
+  { to: '/relics',      label: 'Relics' },
+  { to: '/builder',     label: 'Builder' },
+  { to: '/team',        label: 'Team' },
 ];
 
 export function Navbar() {
   const { pathname } = useLocation();
+  const { user, profile, signOut } = useAuth();
+  const navigate = useNavigate();
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate('/');
+  };
+
+  const displayName = profile?.username ?? user?.email?.split('@')[0] ?? '';
 
   return (
     <nav
@@ -20,45 +30,159 @@ export function Navbar() {
       }}
       className="sticky top-0 z-50"
     >
-      <div className="max-w-7xl mx-auto px-6 flex items-center justify-center gap-8 h-14">
-        {/* Logo */}
-        <Link to="/" className="flex items-center justify-center shrink-0 text-center">
-          <span
-            style={{ color: 'var(--color-accent)', fontFamily: 'Rajdhani, sans-serif' }}
-            className="text-xl font-bold tracking-widest uppercase"
-          >
-            Stellaron
-          </span>
-        </Link>
+      <div
+        className="max-w-7xl mx-auto px-6 h-14"
+        style={{
+          display: 'grid',
+          gridTemplateColumns: '1fr auto 1fr',
+          alignItems: 'center',
+        }}
+      >
+        {/* Left — spacer */}
+        <div />
 
-        {/* Divider */}
-        <div style={{ background: 'var(--color-border)' }} className="w-px h-6" />
+        {/* Center — Logo + Links */}
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '2rem',
+        }}>
+          {/* Logo */}
+          <Link to="/">
+            <span
+              style={{
+                color: 'var(--color-accent)',
+                fontFamily: 'Rajdhani, sans-serif',
+                fontSize: '1.25rem',
+                fontWeight: 700,
+                letterSpacing: '0.15em',
+                textTransform: 'uppercase',
+              }}
+            >
+              Stellaron
+            </span>
+          </Link>
 
-        {/* Links */}
-        <div className="flex items-center gap-1">
-          {NAV_LINKS.map(({ to, label }) => {
-            const active = to === '/' ? pathname === '/' : pathname.startsWith(to);
-            return (
+          {/* Divider */}
+          <div style={{
+            width: '1px',
+            height: '24px',
+            background: 'var(--color-border)',
+            flexShrink: 0,
+          }} />
+
+          {/* Links */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+            {NAV_LINKS.map(({ to, label }) => {
+              const active = to === '/' ? pathname === '/' : pathname.startsWith(to);
+              return (
+                <Link
+                  key={to}
+                  to={to}
+                  style={{
+                    color: active ? 'var(--color-accent)' : 'var(--color-muted)',
+                    background: active ? 'rgba(79,195,247,0.08)' : 'transparent',
+                    borderBottom: active ? '2px solid var(--color-accent)' : '2px solid transparent',
+                    fontFamily: 'Rajdhani, sans-serif',
+                    padding: '0.25rem 0.75rem',
+                    fontSize: '0.875rem',
+                    fontWeight: 600,
+                    letterSpacing: '0.1em',
+                    textTransform: 'uppercase',
+                    transition: 'color 0.15s',
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  {label}
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Right — Auth */}
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.75rem',
+          justifyContent: 'flex-end',
+        }}>
+          {user ? (
+            <>
               <Link
-                key={to}
-                to={to}
+                to="/profile"
                 style={{
-                  color: active ? 'var(--color-accent)' : 'var(--color-muted)',
-                  background: active ? 'rgba(79,195,247,0.08)' : 'transparent',
-                  borderBottom: active ? '2px solid var(--color-accent)' : '2px solid transparent',
+                  color: 'var(--color-accent)',
                   fontFamily: 'Rajdhani, sans-serif',
-                  padding: '0.25rem 1.75rem',
-                  fontSize: '0.875rem',
+                  fontSize: '0.75rem',
+                  fontWeight: 700,
+                  letterSpacing: '0.05em',
+                  textDecoration: 'none',
+                  padding: '0.25rem 0.625rem',
+                  borderRadius: '6px',
+                  border: '1px solid var(--color-border)',
+                  whiteSpace: 'nowrap',
+                  maxWidth: '140px',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  display: 'inline-block',
+                }}
+              >
+                {displayName}
+              </Link>
+              <button
+                onClick={handleSignOut}
+                style={{
+                  background: 'transparent',
+                  border: '1px solid var(--color-border)',
+                  borderRadius: '6px',
+                  color: 'var(--color-muted)',
+                  padding: '0.25rem 0.75rem',
+                  fontFamily: 'Rajdhani, sans-serif',
                   fontWeight: 600,
+                  fontSize: '0.75rem',
                   letterSpacing: '0.1em',
                   textTransform: 'uppercase',
-                  transition: 'color 0.15s',
-                }}>
-                {label}
-              </Link>
-            );
-          })}
+                  cursor: 'pointer',
+                  transition: 'all 0.15s',
+                  whiteSpace: 'nowrap',
+                }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLElement).style.borderColor = 'var(--color-red)';
+                  (e.currentTarget as HTMLElement).style.color = 'var(--color-red)';
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLElement).style.borderColor = 'var(--color-border)';
+                  (e.currentTarget as HTMLElement).style.color = 'var(--color-muted)';
+                }}
+              >
+                Sign Out
+              </button>
+            </>
+          ) : (
+            <Link
+              to="/login"
+              style={{
+                background: 'var(--color-accent)',
+                border: 'none',
+                borderRadius: '6px',
+                color: '#000',
+                padding: '0.25rem 0.75rem',
+                fontFamily: 'Rajdhani, sans-serif',
+                fontWeight: 700,
+                fontSize: '0.75rem',
+                letterSpacing: '0.1em',
+                textTransform: 'uppercase',
+                cursor: 'pointer',
+                whiteSpace: 'nowrap',
+                textDecoration: 'none',
+              }}
+            >
+              Sign In
+            </Link>
+          )}
         </div>
+
       </div>
     </nav>
   );
