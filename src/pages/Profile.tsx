@@ -3,44 +3,40 @@ import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabase';
 
 export default function Profile() {
-  const { user, profile, refreshProfile } = useAuth();
+  const { user, updateDisplayName } = useAuth();
 
-  const [username, setUsername] = useState(profile?.username ?? '');
+  const [displayName, setDisplayName] = useState(user?.user_metadata?.display_name ?? '');
   const [newEmail, setNewEmail] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmNewPassword, setConfirmNewPassword] = useState('');
 
-  const [usernameMsg, setUsernameMsg] = useState<{ text: string; ok: boolean } | null>(null);
+  const [displayNameMsg, setDisplayNameMsg] = useState<{ text: string; ok: boolean } | null>(null);
   const [emailMsg, setEmailMsg] = useState<{ text: string; ok: boolean } | null>(null);
   const [passwordMsg, setPasswordMsg] = useState<{ text: string; ok: boolean } | null>(null);
 
-  const [loadingUsername, setLoadingUsername] = useState(false);
+  const [loadingDisplayName, setLoadingDisplayName] = useState(false);
   const [loadingEmail, setLoadingEmail] = useState(false);
   const [loadingPassword, setLoadingPassword] = useState(false);
 
-  const handleUpdateUsername = async () => {
-    setUsernameMsg(null);
-    setLoadingUsername(true);
+  const handleUpdateDisplayName = async () => {
+    setDisplayNameMsg(null);
+    setLoadingDisplayName(true);
 
-    if (!username.trim()) {
-      setUsernameMsg({ text: 'Username cannot be empty.', ok: false });
-      setLoadingUsername(false);
+    if (!displayName.trim()) {
+      setDisplayNameMsg({ text: 'Display name cannot be empty.', ok: false });
+      setLoadingDisplayName(false);
       return;
     }
 
-    const { error } = await supabase
-      .from('profiles')
-      .update({ username: username.trim(), updated_at: new Date().toISOString() })
-      .eq('id', user!.id);
+    const { error } = await updateDisplayName(displayName.trim());
 
     if (error) {
-      setUsernameMsg({ text: error.message, ok: false });
+      setDisplayNameMsg({ text: error, ok: false });
     } else {
-      await refreshProfile();
-      setUsernameMsg({ text: 'Username updated successfully.', ok: true });
+      setDisplayNameMsg({ text: 'Display name updated successfully.', ok: true });
     }
 
-    setLoadingUsername(false);
+    setLoadingDisplayName(false);
   };
 
   const handleUpdateEmail = async () => {
@@ -53,12 +49,13 @@ export default function Profile() {
       return;
     }
 
+    // Actually update the email
     const { error } = await supabase.auth.updateUser({ email: newEmail.trim() });
 
     if (error) {
       setEmailMsg({ text: error.message, ok: false });
     } else {
-      setEmailMsg({ text: 'Confirmation sent to your new email address.', ok: true });
+      setEmailMsg({ text: 'Email updated successfully.', ok: true });
       setNewEmail('');
     }
 
@@ -87,6 +84,7 @@ export default function Profile() {
       return;
     }
 
+    // Actually update the password
     const { error } = await supabase.auth.updateUser({ password: newPassword });
 
     if (error) {
@@ -125,17 +123,17 @@ export default function Profile() {
         </p>
       </div>
 
-      {/* Username */}
-      <Section title="Username">
+      {/* Display Name */}
+      <Section title="Display Name">
         <input
           type="text"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          placeholder="Enter a username"
+          value={displayName}
+          onChange={(e) => setDisplayName(e.target.value)}
+          placeholder="Enter your display name"
           style={inputStyle}
         />
-        {usernameMsg && <Feedback msg={usernameMsg} />}
-        <SaveButton onClick={handleUpdateUsername} loading={loadingUsername} />
+        {displayNameMsg && <Feedback msg={displayNameMsg} />}
+        <SaveButton onClick={handleUpdateDisplayName} loading={loadingDisplayName} />
       </Section>
 
       {/* Email */}
@@ -176,8 +174,6 @@ export default function Profile() {
     </div>
   );
 }
-
-// ─── Small helper components ──────────────────────────────────────────────────
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (

@@ -2,21 +2,14 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import type { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/lib/supabase';
 
-interface Profile {
-  id: string;
-  username: string | null;
-  updated_at: string;
-}
-
 interface AuthContextType {
   user: User | null;
   session: Session | null;
-  profile: Profile | null;
   isLoading: boolean;
   signIn: (email: string, password: string) => Promise<{ error: string | null }>;
   signUp: (email: string, password: string, username: string) => Promise<{ error: string | null }>;
   signOut: () => Promise<void>;
-  refreshProfile: () => Promise<void>;
+  updateDisplayName: (displayName: string) => Promise<{ error: string | null }>;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -24,38 +17,18 @@ const AuthContext = createContext<AuthContextType | null>(null);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
-  const [profile, setProfile] = useState<Profile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-
-  const fetchProfile = async (userId: string) => {
-    const { data } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', userId)
-      .single();
-    setProfile(data ?? null);
-  };
-
-  const refreshProfile = async () => {
-    if (user) await fetchProfile(user.id);
-  };
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
-      if (session?.user) fetchProfile(session.user.id);
       setIsLoading(false);
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
       setUser(session?.user ?? null);
-      if (session?.user) {
-        fetchProfile(session.user.id);
-      } else {
-        setProfile(null);
-      }
       setIsLoading(false);
     });
 
@@ -68,25 +41,37 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const signUp = async (email: string, password: string, username: string) => {
-    const { data, error } = await supabase.auth.signUp({ email, password });
+    const { data, error } = await supabase.auth.signUp({ 
+      email, 
+      password,
+      options: {
+        data: {
+          display_name: username,
+        },
+      },
+    });
     
     if (error) return { error: error.message };
     
+    // Update user metadata with display_name
     if (data.user) {
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .upsert({ 
-          id: data.user.id,
-          username, 
-          updated_at: new Date().toISOString() 
-        });
-      if (profileError) {
-        console.error('Profile save error:', profileError);
-        return { error: profileError.message };
+      const { error: updateError } = await supabase.auth.updateUser({
+        data: { display_name: username },
+      });
+      if (updateError) {
+        console.error('Display name update error:', updateError);
+        return { error: updateError.message };
       }
-      await fetchProfile(data.user.id);
     }
+    
     return { error: null };
+  };
+
+  const updateDisplayName = async (displayName: string) => {
+    const { error } = await supabase.auth.updateUser({
+      data: { display_name: displayName },
+    });
+    return { error: error?.message ?? null };
   };
 
   const signOut = async () => {
@@ -94,7 +79,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, session, profile, isLoading, signIn, signUp, signOut, refreshProfile }}>
+    <AuthContext.Provider value={{ user, session, isLoading, signIn, signUp, signOut, updateDisplayName }}>
       {children}
     </AuthContext.Provider>
   );

@@ -12,7 +12,7 @@ const NAV_LINKS = [
 
 export function Navbar() {
   const { pathname } = useLocation();
-  const { user, profile, signOut } = useAuth();
+  const { user, signOut } = useAuth();
   const navigate = useNavigate();
 
   const handleSignOut = async () => {
@@ -20,7 +20,8 @@ export function Navbar() {
     navigate('/');
   };
 
-  const displayName = profile?.username ?? user?.email?.split('@')[0] ?? '';
+  // Get display_name from user metadata, fallback to email prefix
+  const displayName = user?.user_metadata?.display_name ?? user?.email?.split('@')[0] ?? '';
 
   return (
     <nav
