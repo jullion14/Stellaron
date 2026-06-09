@@ -98,7 +98,18 @@ export interface LightCone {
 // ─── Relics ──────────────────────────────────────────────────────────────────
 
 export type RelicSlot = 'Head' | 'Hands' | 'Body' | 'Feet' | 'PlanarSphere' | 'LinkRope';
-export type StatKey = keyof BaseStats | 'atkPercent' | 'hpPercent' | 'defPercent' | 'dmgBonus';
+// Relic Stat Definitions
+export type StatKey = 
+  | keyof BaseStats 
+  | 'atkPercent' 
+  | 'hpPercent' 
+  | 'defPercent' 
+  | 'dmgBonus'
+  | 'breakEffect'
+  | 'effectHitRate'
+  | 'effectRes'
+  | 'healBonus'
+  | 'energyRegen'; 
 
 export interface RelicSubStat {
   key: StatKey;
@@ -125,4 +136,39 @@ export interface Build {
   lightConeSuperimposition: number;
   relics: Partial<Record<RelicSlot, Relic>>;
   eidolons: number;
+}
+
+export interface BuilderBuild {
+  id: string;
+  characterId: string;
+  characterName: string;
+  characterElement: Element;
+  characterPath: Path;
+  level: number;
+  eidolonLevel: number;
+  skillLevels: {
+    normal: number;      // 1-7
+    skill: number;       // 1-12
+    ultimate: number;    // 1-12
+    talent: number;      // 1-12
+    technique: number;   // 1 only
+  };
+  lightConeId?: string;
+  lightConeName?: string;
+  lightConeSuperimposition: number
+  relics: Partial<Record<RelicSlot, Relic>>; // Use your existing Relic type
+  notes: string;
+  savedAt: string;
+  portraitUrl?: string;
+}
+
+export interface AggregatedStats extends BaseStats {
+  breakEffect: number;
+  effectHitRate: number;
+  effectRes: number;
+  healBonus: number;
+  atkPercent: number;
+  hpPercent: number;
+  defPercent: number;
+  dmgBonus: number;
 }

@@ -10,4 +10,13 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
+  server: {
+    proxy: {
+      '/api/mihomo': {
+        target: 'https://api.mihomo.me',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/mihomo/, ''),
+      },
+    },
+  },
 })
