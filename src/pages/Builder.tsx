@@ -8,7 +8,7 @@ import { CharacterPreviewPanel } from '@/components/builder/CharacterPreviewPane
 import { StatsSummary } from '@/components/builder/StatsSummary';
 import { ShowcaseCharacterCard } from '@/components/builder/ShowcaseCharacterCard';
 import { mapMihomoCharacterToBuild } from '@/api/mihomo';
-import { ELEMENT_COLORS, PATH_COLORS, PATH_LABELS, PATH_ICON_URLS } from '@/utils/constants';
+import { ELEMENT_COLORS, PATH_LABELS, PATH_ICON_URLS } from '@/utils/constants';
 import type { Character } from '@/types';
 
 type BuildSourceMode = 'manual' | 'uid';

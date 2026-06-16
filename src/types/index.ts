@@ -123,6 +123,7 @@ export interface Relic {
   slot: RelicSlot;
   rarity: Rarity;
   level: number;
+  icon?: string;
   mainStat: RelicSubStat;
   subStats: RelicSubStat[];
 }

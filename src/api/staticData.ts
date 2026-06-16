@@ -106,6 +106,38 @@ export interface RawRelic {
   sub_affix_id: string;
   icon: string;
 }
+
+export interface RawRelicSet {
+  id: string;
+  name: string;
+  desc: string[];
+  properties: unknown[][];
+  icon: string;
+}
+export interface RawRelicMainAffix {
+  affix_id: string;
+  property: string;
+  base: number;
+  step: number;
+}
+
+export interface RawRelicMainAffixGroup {
+  affixes: Record<string, RawRelicMainAffix>;
+}
+
+export interface RawRelicSubAffix {
+  affix_id: string;
+  property: string;
+  base: number;
+  step: number;
+  step_num: number;
+}
+
+export interface RawRelicSubAffixGroup {
+  id: string;
+  affixes: Record<string, RawRelicSubAffix>;
+}
+
 // ─── Fetchers ────────────────────────────────────────────────────────────────
 
 export const fetchRawCharacters = () =>
@@ -132,7 +164,7 @@ export const fetchLightConeRanks = () =>
 export const fetchRawRelics = () =>
   fetchJSON<Record<string, RawRelic>>('relics');
 
-export async function fetchRawRelicSets() {
+export async function fetchRawRelicSets(): Promise<Record<string, RawRelicSet>> {
   const res = await fetch(`${DB}/relic_sets.json`);
   return res.json();
 }
@@ -148,6 +180,11 @@ export async function fetchCharacterSkillTrees() {
 
   return res.json();
 }
+export const fetchRelicMainAffixes = () =>
+  fetchJSON<Record<string, RawRelicMainAffixGroup>>('relic_main_affixes');
+
+export const fetchRelicSubAffixes = () =>
+  fetchJSON<Record<string, RawRelicSubAffixGroup>>('relic_sub_affixes');
 
 // ─── Stat calculator ─────────────────────────────────────────────────────────
 // Computes final stat at a given ascension (0–6) and level (1–80)
